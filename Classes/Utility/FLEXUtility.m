@@ -179,6 +179,10 @@ BOOL FLEXConstructorsShouldRun() {
         UIImage *indentationPatternImage = FLEXResources.hierarchyIndentPattern;
         patternColor = [UIColor colorWithPatternImage:indentationPatternImage];
         if (@available(iOS 13.0, *)) {
+            if (indentationPatternImage.size.width <= 0.0 || indentationPatternImage.size.height <= 0.0) {
+                return;
+            }
+            
             // Create a dark mode version
             UIGraphicsBeginImageContextWithOptions(
                 indentationPatternImage.size, NO, indentationPatternImage.scale

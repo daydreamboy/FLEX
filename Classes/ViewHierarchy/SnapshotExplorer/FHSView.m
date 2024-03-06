@@ -87,7 +87,10 @@
 
 @implementation FHSView (Snapshotting)
 
-+ (UIImage *)drawView:(UIView *)view {
++ (UIImage * _Nullable)drawView:(UIView *)view {
+    if (CGRectIsEmpty(view.bounds)) {
+        return nil;
+    }
     UIGraphicsBeginImageContextWithOptions(view.bounds.size, NO, 0);
     [view drawViewHierarchyInRect:view.bounds afterScreenUpdates:YES];
     UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
