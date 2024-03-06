@@ -11,25 +11,25 @@
 
 #import <UIKit/UIKit.h>
 
+#define FLEX_getBoolFromInfoPlist(key_, defaultBool_) \
+({ \
+    BOOL value = (defaultBool_); \
+    id object = [[[NSBundle bundleForClass:[self class]] infoDictionary] objectForKey:(key_)]; \
+    if ([object respondsToSelector:@selector(boolValue)]) { \
+        value = [object boolValue]; \
+    } \
+    value; \
+});
+
 @implementation FLEXBootloader
 
 + (void)load {
-    BOOL enableBootload = NO;
-    id object1 = [[[NSBundle bundleForClass:[self class]] infoDictionary] objectForKey:@"FLEXEnableBootload"];
-    if ([object1 respondsToSelector:@selector(boolValue)]) {
-        enableBootload = [object1 boolValue];
-    }
-    
+    BOOL enableBootload = FLEX_getBoolFromInfoPlist(@"FLEXEnableBootload", NO);
     if (!enableBootload) {
         return;
     }
     
-    BOOL enableShowWhenAppLaunch = NO;
-    id object2 = [[[NSBundle bundleForClass:[self class]] infoDictionary] objectForKey:@"FLEXEnableBootloadWhenAppLaunch"];
-    if ([object2 respondsToSelector:@selector(boolValue)]) {
-        enableBootload = [object2 boolValue];
-    }
-    
+    BOOL enableShowWhenAppLaunch = FLEX_getBoolFromInfoPlist(@"FLEXEnableBootloadWhenAppLaunch", NO);
     if (enableShowWhenAppLaunch) {
         if (@available(iOS 13.0, *)) {
             [[NSNotificationCenter defaultCenter] addObserverForName:UISceneWillConnectNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification * _Nonnull notification) {
@@ -44,12 +44,7 @@
     }
     
     if (@available(iOS 11.0, *)) {
-        BOOL enableShowWhenTakeScreenshot = NO;
-        id object2 = [[[NSBundle bundleForClass:[self class]] infoDictionary] objectForKey:@"FLEXEnableBootloadWhenTakeScreenshot"];
-        if ([object2 respondsToSelector:@selector(boolValue)]) {
-            enableShowWhenTakeScreenshot = [object2 boolValue];
-        }
-        
+        BOOL enableShowWhenTakeScreenshot = FLEX_getBoolFromInfoPlist(@"FLEXEnableBootloadWhenTakeScreenshot", NO);
         if (enableShowWhenTakeScreenshot) {
             [[NSNotificationCenter defaultCenter] addObserverForName:UIApplicationUserDidTakeScreenshotNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification * _Nonnull notification) {
                 [[FLEXManager sharedManager] showExplorer];
