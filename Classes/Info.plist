@@ -22,6 +22,10 @@
 	<string>$(CURRENT_PROJECT_VERSION)</string>
 	<key>FLEXEnableBootload</key>
 	<true/>
+	<key>FLEXEnableBootloadWhenAppLaunch</key>
+	<true/>
+	<key>FLEXEnableBootloadWhenTakeScreenshot</key>
+	<true/>
 	<key>NSPrincipalClass</key>
 	<string></string>
 </dict>
