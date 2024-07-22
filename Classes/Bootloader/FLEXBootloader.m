@@ -24,32 +24,40 @@
 @implementation FLEXBootloader
 
 + (void)load {
-    BOOL enableBootload = FLEX_getBoolFromInfoPlist(@"FLEXEnableBootload", NO);
-    if (!enableBootload) {
-        return;
+    // Note: check executable file name is FLEX, here suppose FLEX executable is a dynamic framework
+    if ([[[NSBundle bundleForClass:[self class]].executableURL lastPathComponent] isEqualToString:@"FLEX"]) {
+        BOOL enableBootload = FLEX_getBoolFromInfoPlist(@"FLEXEnableBootload", NO);
+        if (!enableBootload) {
+            return;
+        }
+        
+        BOOL enableShowWhenAppLaunch = FLEX_getBoolFromInfoPlist(@"FLEXEnableBootloadWhenAppLaunch", NO);
+        if (enableShowWhenAppLaunch) {
+            if (@available(iOS 13.0, *)) {
+                [[NSNotificationCenter defaultCenter] addObserverForName:UISceneWillConnectNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification * _Nonnull notification) {
+                    [[FLEXManager sharedManager] showExplorer];
+                }];
+            }
+            else {
+                [[NSNotificationCenter defaultCenter] addObserverForName:UIApplicationDidFinishLaunchingNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification * _Nonnull notification) {
+                    [[FLEXManager sharedManager] showExplorer];
+                }];
+            }
+        }
+        
+        if (@available(iOS 11.0, *)) {
+            BOOL enableShowWhenTakeScreenshot = FLEX_getBoolFromInfoPlist(@"FLEXEnableBootloadWhenTakeScreenshot", NO);
+            if (enableShowWhenTakeScreenshot) {
+                [[NSNotificationCenter defaultCenter] addObserverForName:UIApplicationUserDidTakeScreenshotNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification * _Nonnull notification) {
+                    [[FLEXManager sharedManager] showExplorer];
+                }];
+            }
+        }
     }
-    
-    BOOL enableShowWhenAppLaunch = FLEX_getBoolFromInfoPlist(@"FLEXEnableBootloadWhenAppLaunch", NO);
-    if (enableShowWhenAppLaunch) {
-        if (@available(iOS 13.0, *)) {
-            [[NSNotificationCenter defaultCenter] addObserverForName:UISceneWillConnectNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification * _Nonnull notification) {
-                [[FLEXManager sharedManager] showExplorer];
-            }];
-        }
-        else {
-            [[NSNotificationCenter defaultCenter] addObserverForName:UIApplicationDidFinishLaunchingNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification * _Nonnull notification) {
-                [[FLEXManager sharedManager] showExplorer];
-            }];
-        }
-    }
-    
-    if (@available(iOS 11.0, *)) {
-        BOOL enableShowWhenTakeScreenshot = FLEX_getBoolFromInfoPlist(@"FLEXEnableBootloadWhenTakeScreenshot", NO);
-        if (enableShowWhenTakeScreenshot) {
-            [[NSNotificationCenter defaultCenter] addObserverForName:UIApplicationUserDidTakeScreenshotNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification * _Nonnull notification) {
-                [[FLEXManager sharedManager] showExplorer];
-            }];
-        }
+    else {
+        [[NSNotificationCenter defaultCenter] addObserverForName:UIApplicationUserDidTakeScreenshotNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification * _Nonnull notification) {
+            [[FLEXManager sharedManager] showExplorer];
+        }];   
     }
 }
 
