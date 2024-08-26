@@ -158,7 +158,10 @@ didBecomeDownloadTask:(NSURLSessionDownloadTask *)downloadTask delegate:(id<NSUR
         return;
     }
 
-    const void *key = selector;
+    // Note: change key because maybe multiple 'FLEX' code run at the same time,
+    // this will affect with each other
+    //const void *key = selector;
+    const void *key = sel_registerName([NSStringFromSelector(selector) stringByAppendingString:@"_for_flex"].UTF8String);
 
     // Don't run the sniffing block if we're inside a nested call
     if (!objc_getAssociatedObject(object, key)) {
